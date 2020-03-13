@@ -1,34 +1,29 @@
 package com.gh.rthoth.zerializer
 
-import ZBuilder.Field
+import com.gh.rthoth.zerializer.CZerializer.Field
 
-object ZBuilder {
+class CBuilder[T] {
 
-  case class Field[T](name: String, zerializer: Zerializer[T])
-}
-
-class ZBuilder[T] {
-
-  def field[F](name: String)(implicit zerializer: Zerializer[F]): ZBuilder1[T, F] = {
-    new ZBuilder1(Field(name, zerializer))
+  def field[F](name: String)(implicit zerializer: Zerializer[F]): CBuilder1[T, F] = {
+    new CBuilder1(Field(name, zerializer))
   }
 }
 
-[1..21#class ZBuilder1[T, [#F1#]]([#f1: Field[F1]#]) {
+[1..21#class CBuilder1[T, [#F1#]]([#f1: Field[F1]#]) {
 
-  def field[F](name: String)(implicit zerializer: Zerializer[F]): ZBuilder2[T, [#F1#], F] = {
-    new ZBuilder2([#f1#], Field(name, zerializer))
+  def field[F](name: String)(implicit zerializer: Zerializer[F]): CBuilder2[T, [#F1#], F] = {
+    new CBuilder2([#f1#], Field(name, zerializer))
   }
 
-  def mapTo(apply: ([#F1#]) => Option[T], unapply: T => Option[([#F1#])]): Zerializer[T] = {
+  def mapTo(apply: ([#F1#]) => Option[T], unapply: T => Option[([#F1#])]): CZerializer[T] = {
     ???
   }
 }#
 ]
 
-class ZBuilder22[T, [#F1#]]([#f1: Field[F1]#]) {
+class CBuilder22[T, [#F1#]]([#f1: Field[F1]#]) {
 
-  def mapTo(apply: ([#F1#]) => Option[T], unapply: T => Option[([#F1#])]): Zerializer[T] = {
+  def mapTo(apply: ([#F1#]) => Option[T], unapply: T => Option[([#F1#])]): CZerializer[T] = {
     ???
   }
 }
