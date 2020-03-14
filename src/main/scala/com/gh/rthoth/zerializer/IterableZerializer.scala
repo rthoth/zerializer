@@ -4,27 +4,28 @@ import java.io.{DataInput, DataOutput}
 
 import scala.collection.IterableFactory
 
-class IterableZerializer[T, C[_] <: Iterable[T]](factory: IterableFactory[C], zerializer: Zerializer[T]) extends Zerializer[C[T]] {
+class IterableZerializer[E, C[E] <: Iterable[E]](zerializer: Zerializer[E], factory: IterableFactory[C], limit: Int) extends Zerializer[C[E]] {
 
-  override def write(value: C[T], output: DataOutput): Unit = {
-    val size = value.size
-    output.writeInt(size)
-
-    for (elem <- value)
-      zerializer.write(elem, output)
+  override def write(value: C[E], output: DataOutput): Unit = {
+    output.writeInt(value.size)
+    for (e <- value)
+      zerializer.write(e, output)
   }
 
-  override def read(input: DataInput): C[T] = {
+  override def read(input: DataInput): C[E] = {
     val size = input.readInt()
-    if (size > 0) {
-      val builder = factory.newBuilder[T]
+    if (size > 0 && size <= limit) {
+      val builder = factory.newBuilder[E]
       for (_ <- 0 until size)
         builder += zerializer.read(input)
+
       builder.result()
     } else if (size == 0) {
       factory.empty
+    } else if (size > limit) {
+      throw new ZerializerException(s"Invalid size [$size], it was greater than [$limit]!")
     } else {
-      throw new ZerializerException(s"Invalid Iterable Size [$size]!")
+      throw new ZerializerException(s"Invalid size [$size]!")
     }
   }
 }

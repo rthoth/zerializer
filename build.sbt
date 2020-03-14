@@ -7,6 +7,9 @@ ThisBuild / crossScalaVersions := List("2.13.1", "2.12.10")
 
 lazy val root = (project in file("."))
   .settings(
-    name := "zerializer"
+    name := "zerializer",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % "3.1.1" % "test"
+    )
   )
   .enablePlugins(BoilerplatePlugin)

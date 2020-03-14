@@ -2,8 +2,7 @@ package com.gh.rthoth
 
 import java.io.{DataInput, DataOutput}
 
-import scala.collection.immutable.HashSet
-import scala.collection.{IterableFactory, mutable}
+import scala.collection.IterableFactory
 import scala.language.implicitConversions
 
 package object zerializer {
@@ -33,18 +32,23 @@ package object zerializer {
     }
   }
 
-  implicit def optionZerializer[T](implicit zerializer: Zerializer[T]): OptionZerializer[T] = {
-    new OptionZerializer(zerializer)
-  }
+  def newBuilder[T]: CBuilder[T] = new CBuilder[T]
 
   implicit def eitherZerializer[L, R](implicit lZ: Zerializer[L], rZ: Zerializer[R]): EitherZerializer[L, R] = {
     new EitherZerializer(lZ, rZ)
   }
 
-  implicit def throwableZerializer: Zerializer[Throwable] = ThrowableZerializer
-
-  implicit def iterableZerializer[T, C[_] <: Iterable[_]](implicit zerializer: Zerializer[T], factory: IterableFactory[C]): Zerializer[C[T]] = {
-    new IterableZerializer(factory, zerializer)
+  implicit def iterableFactory[E, C[E] <: Iterable[E]](zerializer: Zerializer[E], factory: IterableFactory[C], limit: Int = 10000): Zerializer[C[E]] = {
+    new IterableZerializer(zerializer, factory, limit)
   }
 
+  implicit def mappedZerializer[I, O](to: I => O, from: O => I)(implicit zerializer: Zerializer[O]): Zerializer[I] = {
+    new MappedZerializer(to, from, zerializer)
+  }
+
+  implicit def optionZerializer[T](implicit zerializer: Zerializer[T]): OptionZerializer[T] = {
+    new OptionZerializer(zerializer)
+  }
+
+  implicit def throwableZerializer: Zerializer[Throwable] = ThrowableZerializer
 }

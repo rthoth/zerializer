@@ -1,12 +1,16 @@
 package com.gh.rthoth.zerializer
 
-import java.io.DataOutput
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, InputStream}
 
-abstract class Spec {
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-  val listZerializer = iterableZerializer(IntZerializer, scala.collection.immutable.List)
+abstract class Spec extends AnyFreeSpec with Matchers {
 
-  listZerializer.write(Nil, null : DataOutput)
-
+  protected def writeToInputStream[T](zerializer: Zerializer[T], value: T): InputStream = {
+    val output = new ByteArrayOutputStream()
+    zerializer.write(value, output)
+    new ByteArrayInputStream(output.toByteArray)
+  }
 }
 

@@ -27,10 +27,13 @@ object CZerializer {
 
 abstract class CZerializer[T] extends Zerializer[T]
 
-class CZerializer1[T, F1](f1: Field[F1], apply: F1 => T, unapply: T => F1) extends CZerializer[T] {
+class CZerializer1[T, F1](f1: Field[F1], apply: F1 => T, unapply: T => Option[F1]) extends CZerializer[T] {
 
   def write(value: T, output: DataOutput): Unit = {
-    f1.write(unapply(value), output)
+    unapply(value) match {
+      case Some(field) => f1.write(field, output)
+      case _ => throw new ZerializerException("Invalid value!")
+    }
   }
 
   def read(input: DataInput): T = {
@@ -38,12 +41,15 @@ class CZerializer1[T, F1](f1: Field[F1], apply: F1 => T, unapply: T => F1) exten
   }
 }
 
-[2..22#class CZerializer1[T, [#F1#]]([#f1: Field[F1]#], apply: ([#F1#]) => T, unapply: T => ([#F1#])) extends CZerializer[T] {
+[2..22#class CZerializer1[T, [#F1#]]([#f1: Field[F1]#], apply: ([#F1#]) => T, unapply: T => Option[([#F1#])]) extends CZerializer[T] {
 
   def write(value: T, output: DataOutput): Unit = {
-    val tuple = unapply(value)
-    [#f1.write(tuple._1, output)#
-    ]
+    unapply(value) match {
+      case Some(tuple) =>
+        [#f1.write(tuple._1, output)#
+        ]
+      case _ => throw new ZerializerException("Invalid value!")
+    }
   }
 
   def read(input: DataInput): T = {

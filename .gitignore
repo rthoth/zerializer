@@ -4,3 +4,5 @@
 .metals/
 target/
 project/target/
+
+.attach_pid*

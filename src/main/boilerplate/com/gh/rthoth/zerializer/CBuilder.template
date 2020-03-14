@@ -15,7 +15,7 @@ class CBuilder[T] {
     new CBuilder2([#f1#], Field(name, zerializer))
   }
 
-  def mapTo(apply: ([#F1#]) => T, unapply: T => ([#F1#])): CZerializer[T] = {
+  def mapTo(apply: ([#F1#]) => T, unapply: T => Option[([#F1#])]): CZerializer[T] = {
     new CZerializer1([#f1#], apply, unapply)
   }
 }#
@@ -23,7 +23,7 @@ class CBuilder[T] {
 
 class CBuilder22[T, [#F1#]]([#f1: Field[F1]#]) {
 
-  def mapTo(apply: ([#F1#]) => T, unapply: T => ([#F1#])): CZerializer[T] = {
+  def mapTo(apply: ([#F1#]) => T, unapply: T => Option[([#F1#])]): CZerializer[T] = {
     new CZerializer22([#f1#], apply, unapply)
   }
 }
