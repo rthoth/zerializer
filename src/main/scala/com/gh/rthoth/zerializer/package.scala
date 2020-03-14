@@ -1,6 +1,9 @@
 package com.gh.rthoth
 
 import java.io.{DataInput, DataOutput}
+
+import scala.collection.immutable.HashSet
+import scala.collection.{IterableFactory, mutable}
 import scala.language.implicitConversions
 
 package object zerializer {
@@ -36,6 +39,12 @@ package object zerializer {
 
   implicit def eitherZerializer[L, R](implicit lZ: Zerializer[L], rZ: Zerializer[R]): EitherZerializer[L, R] = {
     new EitherZerializer(lZ, rZ)
+  }
+
+  implicit def throwableZerializer: Zerializer[Throwable] = ThrowableZerializer
+
+  implicit def iterableZerializer[T, C[_] <: Iterable[_]](implicit zerializer: Zerializer[T], factory: IterableFactory[C]): Zerializer[C[T]] = {
+    new IterableZerializer(factory, zerializer)
   }
 
 }

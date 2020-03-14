@@ -1,0 +1,55 @@
+package com.gh.rthoth.zerializer
+
+import CZerializer.Field
+
+import java.io.{DataInput, DataOutput}
+
+object CZerializer {
+
+  case class Field[T](name: String, zerializer: Zerializer[T]) {
+
+    def write(value: T, output: DataOutput): Unit = try {
+      zerializer.write(value, output)
+    } catch {
+      case cause: Throwable =>
+        throw new ZerializerException(s"It was impossible write [$name] field!", cause)
+    }
+
+    def read(input: DataInput): T = try {
+      zerializer.read(input)
+    } catch {
+      case cause: Throwable =>
+        throw new ZerializerException(s"It was impossible read [$name] field!", cause)
+    }
+  }
+
+}
+
+abstract class CZerializer[T] extends Zerializer[T]
+
+class CZerializer1[T, F1](f1: Field[F1], apply: F1 => T, unapply: T => F1) extends CZerializer[T] {
+
+  def write(value: T, output: DataOutput): Unit = {
+    f1.write(unapply(value), output)
+  }
+
+  def read(input: DataInput): T = {
+    apply(f1.read(input))
+  }
+}
+
+[2..22#class CZerializer1[T, [#F1#]]([#f1: Field[F1]#], apply: ([#F1#]) => T, unapply: T => ([#F1#])) extends CZerializer[T] {
+
+  def write(value: T, output: DataOutput): Unit = {
+    val tuple = unapply(value)
+    [#f1.write(tuple._1, output)#
+    ]
+  }
+
+  def read(input: DataInput): T = {
+    [#val _1 = f1.read(input)#
+    ]
+    apply([#_1#])
+  }
+}#
+]
